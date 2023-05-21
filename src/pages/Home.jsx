@@ -4,25 +4,42 @@ import { NavLink } from 'react-router-dom';
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const trendingMovies = async () => {
-      const trendList = await getTrendingMovies();
-      setMovies(trendList);
-      console.log(trendList);
-      return trendList;
+      setLoading(true);
+      try {
+        const trendList = await getTrendingMovies();
+        setMovies(trendList);
+        console.log(trendList);
+        return trendList;
+      } catch (error) {
+        setError('Ooops. Something went wrong...');
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     };
     trendingMovies();
   }, []);
 
   return (
-    <ul>
-      {movies.map(movie => (
-        <li key={movie.id}>
-          <NavLink to="/movies/:id">{movie.title}</NavLink>
-        </li>
-      ))}
-    </ul>
+    <div>
+      {loading && 'Loading ...'}
+      {!loading && !movies.length && 'NOT FOUND'}
+      {error && <div>{error}</div>}
+      {movies && (
+        <ul>
+          {movies.map(movie => (
+            <li key={movie.id}>
+              <NavLink to={`/movies/${movie.id}`}>{movie.title}</NavLink>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 

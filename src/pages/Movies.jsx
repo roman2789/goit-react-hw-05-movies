@@ -1,39 +1,51 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useSearchParams } from 'react-router-dom';
 import { getSearchMovies } from '../API';
+import SearchBar from 'components/SearchBar';
 
 const Movies = () => {
-  const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const searchMovies = async querySearch => {
-    const searchList = await getSearchMovies(querySearch);
-    console.log(searchList);
-    setMovies(searchList);
-    return searchList;
-  };
+  const querySearch = searchParams.get('query');
 
-  const handleQuery = e => {
-    setQuery(e.target.value);
-  };
+  useEffect(() => {
+    if (!querySearch) {
+      return;
+    }
+    const getMovie = () => {
+      setLoading(true);
+      getSearchMovies(querySearch)
+        .then(searchList => {
+          if (!searchList) {
+            alert('No movies found');
+          }
+          setMovies(searchList);
+        })
+        .catch(error => {
+          setError('Sorry, something went wrong!!!');
+          console.log(error);
+        })
+        .finally(setLoading(false));
+    };
+    getMovie();
+  }, [querySearch]);
 
-  const handleOnSubmit = e => {
-    e.preventDefault();
-    query !== '' && searchMovies(query);
-    console.log(searchMovies(query));
+  const onSubmit = queryValue => {
+    setSearchParams({ query: `${queryValue}` });
   };
 
   return (
     <>
-      <form onSubmit={handleOnSubmit}>
-        <input type="input" onChange={handleQuery} />
-        <button type="submit">Search</button>
-        {/*  */}
-      </form>
+      {loading && 'Loading ...'}
+      {error && <div>{error}</div>}
+      <SearchBar onSearch={onSubmit} />
       <ul>
         {movies.map(movie => (
           <li key={movie.id}>
-            <NavLink to="/movies/:id">{movie.title}</NavLink>
+            <NavLink to={`${movie.id}`}>{movie.title}</NavLink>
           </li>
         ))}
       </ul>

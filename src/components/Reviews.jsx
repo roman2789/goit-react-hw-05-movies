@@ -18,7 +18,7 @@ const Reviews = () => {
           setError('No reviews');
           return;
         }
-        console.log(res);
+
         setReviews(res);
       })
       .catch(error => {

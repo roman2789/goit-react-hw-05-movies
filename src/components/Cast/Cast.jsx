@@ -1,8 +1,9 @@
 import { getMovieCredits } from 'API';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import noPhoto from '../../images/no_photo.jpg';
+import noPhoto from '../../images/no_photo.jpeg';
 import { CastList, CastItem } from './Cast.component';
+import LoaderComponent from '../../components/Loader/Loader';
 
 const Cast = () => {
   const [actors, setActor] = useState(null);
@@ -15,6 +16,10 @@ const Cast = () => {
     setLoading(true);
     getMovieCredits(id)
       .then(info => {
+        if (!info.length) {
+          setError('No cast found...');
+          return;
+        }
         setActor(info);
       })
       .catch(error => {
@@ -24,16 +29,14 @@ const Cast = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  console.log(actors);
-
   return (
     <>
-      {loading && 'Loading...'}
+      {loading && <LoaderComponent />}
       {error && <div>{error}</div>}
       <CastList>
         {actors &&
           actors.map(actor => (
-            <CastItem key={actor.id}>
+            <CastItem key={actor.cast_id}>
               <img
                 src={
                   actor.profile_path

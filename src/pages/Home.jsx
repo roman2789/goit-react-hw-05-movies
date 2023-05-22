@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getTrendingMovies } from '../API';
-import { NavLink } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import MovieList from 'components/MovieList/MovieLIst';
+import LoaderComponent from '../components/Loader/Loader';
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     const trendingMovies = async () => {
@@ -13,7 +17,6 @@ const Home = () => {
       try {
         const trendList = await getTrendingMovies();
         setMovies(trendList);
-        console.log(trendList);
         return trendList;
       } catch (error) {
         setError('Ooops. Something went wrong...');
@@ -27,18 +30,10 @@ const Home = () => {
 
   return (
     <div>
-      {loading && 'Loading ...'}
+      {loading && <LoaderComponent />}
       {!loading && !movies.length && 'NOT FOUND'}
       {error && <div>{error}</div>}
-      {movies && (
-        <ul>
-          {movies.map(movie => (
-            <li key={movie.id}>
-              <NavLink to={`/movies/${movie.id}`}>{movie.title}</NavLink>
-            </li>
-          ))}
-        </ul>
-      )}
+      {movies && <MovieList movies={movies} location={location} />}
     </div>
   );
 };

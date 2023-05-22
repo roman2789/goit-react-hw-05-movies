@@ -1,6 +1,7 @@
 import { getMovieReviews } from 'API';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import LoaderComponent from '../components/Loader/Loader';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState(null);
@@ -29,7 +30,7 @@ const Reviews = () => {
 
   return (
     <div>
-      {loading && 'Loading ...'}
+      {loading && <LoaderComponent />}
       {error && <div>{error}</div>}
       <ul>
         {reviews &&

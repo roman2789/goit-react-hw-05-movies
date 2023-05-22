@@ -17,7 +17,7 @@ export const Button = styled.button`
 export const MainInfo = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: start;
   gap: 40px;
 `;
 export const Title = styled.h1`

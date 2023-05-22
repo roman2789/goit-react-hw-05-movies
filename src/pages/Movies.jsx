@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { getSearchMovies } from '../API';
 import SearchBar from 'components/SearchBar';
+import MovieList from 'components/MovieList/MovieLIst';
+import LoaderComponent from '../components/Loader/Loader';
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
@@ -21,7 +23,7 @@ const Movies = () => {
       getSearchMovies(querySearch)
         .then(searchList => {
           if (!searchList) {
-            alert('No movies found');
+            return alert('No movies found');
           }
           setMovies(searchList);
         })
@@ -37,21 +39,13 @@ const Movies = () => {
   const onSubmit = queryValue => {
     setSearchParams({ query: `${queryValue}` });
   };
-  console.log(location);
+
   return (
     <>
-      {loading && 'Loading ...'}
+      {loading && <LoaderComponent />}
       {error && <div>{error}</div>}
       <SearchBar onSearch={onSubmit} />
-      <ul>
-        {movies.map(movie => (
-          <li key={movie.id}>
-            <NavLink to={`${movie.id}`} state={{ from: location }}>
-              {movie.title}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      {movies && <MovieList movies={movies} location={location} />}
     </>
   );
 };

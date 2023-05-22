@@ -12,6 +12,8 @@ import {
   MainInfo,
   Title,
 } from 'components/MovieList/MovieList.component';
+import noPhoto from '../images/no_photo.jpeg';
+import LoaderComponent from '../components/Loader/Loader';
 
 const Movie = () => {
   const [movie, setMovie] = useState(null);
@@ -23,9 +25,7 @@ const Movie = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const backLinkLocRef = useRef(location.state?.from ?? '/movies');
-
-  console.log(location);
+  const backLinkLocRef = useRef(location.state?.from ?? '/home');
 
   useEffect(() => {
     setLoading(true);
@@ -44,7 +44,7 @@ const Movie = () => {
 
   return (
     <div>
-      {loading && 'Loading ...'}
+      {loading && <LoaderComponent />}
       {error && <div>{error}</div>}
       {movie && (
         <div>
@@ -53,13 +53,17 @@ const Movie = () => {
           <MainInfo>
             <div>
               <img
-                src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                src={
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+                    : noPhoto
+                }
                 alt="movie poster"
               />
             </div>
             <div>
               <div>
-                <Title>{movie.title}</Title>
+                <Title>{movie.title || movie.original_title}</Title>
                 <p>
                   User score: {Number(Math.round(movie.vote_average * 10))}%
                 </p>

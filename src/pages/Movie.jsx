@@ -1,5 +1,5 @@
 import { getMovieDetails } from '../API';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import {
   useParams,
   NavLink,
@@ -7,6 +7,11 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+import {
+  Button,
+  MainInfo,
+  Title,
+} from 'components/MovieList/MovieList.component';
 
 const Movie = () => {
   const [movie, setMovie] = useState(null);
@@ -17,6 +22,9 @@ const Movie = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const backLinkLocRef = useRef(location.state?.from ?? '/movies');
+
   console.log(location);
 
   useEffect(() => {
@@ -32,23 +40,26 @@ const Movie = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleClick = () => navigate(location?.state?.from ?? '/');
+  const handleClick = () => navigate(backLinkLocRef.current);
 
   return (
     <div>
       {loading && 'Loading ...'}
       {error && <div>{error}</div>}
-      <div>
-        <button onClick={handleClick}>GO BACK</button>
-        {movie && (
-          <div>
-            <img
-              src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-              alt="movie poster"
-            />
+      {movie && (
+        <div>
+          <Button onClick={handleClick}>GO BACK</Button>
+
+          <MainInfo>
+            <div>
+              <img
+                src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                alt="movie poster"
+              />
+            </div>
             <div>
               <div>
-                <h1>{movie.title}</h1>
+                <Title>{movie.title}</Title>
                 <p>
                   User score: {Number(Math.round(movie.vote_average * 10))}%
                 </p>
@@ -67,18 +78,20 @@ const Movie = () => {
                 </ul>
               </div>
             </div>
-            <ul>
-              <li>
-                <NavLink to="cast">Cast</NavLink>
-              </li>
-              <li>
-                <NavLink to="reviews">Reviews</NavLink>
-              </li>
-            </ul>
+          </MainInfo>
+          <ul>
+            <li>
+              <NavLink to="cast">Cast</NavLink>
+            </li>
+            <li>
+              <NavLink to="reviews">Reviews</NavLink>
+            </li>
+          </ul>
+          <Suspense fallback={<div>LOADING....</div>}>
             <Outlet />
-          </div>
-        )}
-      </div>
+          </Suspense>
+        </div>
+      )}
     </div>
   );
 };

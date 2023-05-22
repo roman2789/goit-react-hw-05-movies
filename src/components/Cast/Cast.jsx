@@ -1,6 +1,8 @@
 import { getMovieCredits } from 'API';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import noPhoto from '../../images/no_photo.jpg';
+import { CastList, CastItem } from './Cast.component';
 
 const Cast = () => {
   const [actors, setActor] = useState(null);
@@ -28,19 +30,23 @@ const Cast = () => {
     <>
       {loading && 'Loading...'}
       {error && <div>{error}</div>}
-      <ul>
+      <CastList>
         {actors &&
           actors.map(actor => (
-            <li key={actor.id}>
+            <CastItem key={actor.id}>
               <img
-                src={`https://image.tmdb.org/t/p/w200/${actor.profile_path}`}
+                src={
+                  actor.profile_path
+                    ? `https://image.tmdb.org/t/p/w200/${actor.profile_path}`
+                    : noPhoto
+                }
                 alt={actor.original_name}
               />
               <h4>{actor.original_name}</h4>
               <p>{actor.character}</p>
-            </li>
+            </CastItem>
           ))}
-      </ul>
+      </CastList>
     </>
   );
 };

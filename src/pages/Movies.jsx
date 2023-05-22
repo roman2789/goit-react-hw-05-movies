@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useSearchParams } from 'react-router-dom';
+import { NavLink, useSearchParams, useLocation } from 'react-router-dom';
 import { getSearchMovies } from '../API';
 import SearchBar from 'components/SearchBar';
 
@@ -8,6 +8,7 @@ const Movies = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   const querySearch = searchParams.get('query');
 
@@ -36,7 +37,7 @@ const Movies = () => {
   const onSubmit = queryValue => {
     setSearchParams({ query: `${queryValue}` });
   };
-
+  console.log(location);
   return (
     <>
       {loading && 'Loading ...'}
@@ -45,7 +46,9 @@ const Movies = () => {
       <ul>
         {movies.map(movie => (
           <li key={movie.id}>
-            <NavLink to={`${movie.id}`}>{movie.title}</NavLink>
+            <NavLink to={`${movie.id}`} state={{ from: location }}>
+              {movie.title}
+            </NavLink>
           </li>
         ))}
       </ul>

@@ -12,13 +12,17 @@ const Reviews = () => {
   useEffect(() => {
     setLoading(true);
     getMovieReviews(id)
-      .then(info => {
-        console.log(info);
-        setReviews(info);
+      .then(res => {
+        if (!res.length) {
+          setError('No reviews');
+          return;
+        }
+        console.log(res);
+        setReviews(res);
       })
       .catch(error => {
         console.log(error);
-        setError('No reviews');
+        setError('Oops, smth went wrong...');
       })
       .finally(() => setLoading(false));
   }, [id]);
